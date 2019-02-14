@@ -33,6 +33,8 @@ public class PlayerMovement : MonoBehaviour
     public float jumpCooldown = 1.0f;
     private float timestamp;
 
+    [HideInInspector] public bool paused = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -43,11 +45,13 @@ public class PlayerMovement : MonoBehaviour
         colliderHeight = col.height;
         colliderCenter = col.center;
         timestamp = 0f;
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // Take input
         vertInput = Input.GetAxis("Vertical");
         horzInput = Input.GetAxis("Horizontal");
         animator.SetFloat("CurrSpeed", currSpeed);
@@ -55,7 +59,37 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Direction", horzInput);
         movementInput = transform.forward * vertInput;
         turnInput = transform.up * horzInput * Time.deltaTime * turnSpeed;
-        
+
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    if (!animator.IsInTransition(0) && animator.GetCurrentAnimatorStateInfo(0).IsName("Movement") && (Time.time - timestamp) > jumpCooldown)
+        //    {
+        //        Jump();
+        //    }
+        //}
+        //
+        //if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+        //{
+        //    if (!animator.IsInTransition(0))
+        //    {
+        //        CheckJumpHeight();
+        //        animator.SetBool("IsJumping", false);
+        //    }
+        //}
+    }
+
+    private void FixedUpdate()
+    {
+        if (!paused)
+        {
+            Move();
+            transform.Rotate(turnInput);
+            Animate();
+        }
+    }
+
+    private void Move()
+    {
         if (vertInput > minMove)
         {
             isRunning = true;
@@ -77,34 +111,6 @@ public class PlayerMovement : MonoBehaviour
             isIdle = true;
             ApplyDrag();
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (!animator.IsInTransition(0) && animator.GetCurrentAnimatorStateInfo(0).IsName("Movement") && (Time.time - timestamp) > jumpCooldown)
-            {
-                Jump();
-            }
-        }
-
-        if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-        {
-            if (!animator.IsInTransition(0))
-            {
-                CheckJumpHeight();
-                animator.SetBool("IsJumping", false);
-            }
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        Animate();
-        Move();
-        transform.Rotate(turnInput);
-    }
-
-    private void Move()
-    {
         transform.localPosition += (movementInput * Time.fixedDeltaTime * currSpeed);
     }
 
@@ -131,14 +137,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (isWalkingBackwards)
         {
-            if (currSpeed > maxWalkBackwardsSpeed)
-            {
-                currSpeed -= runAccel;
-            }
-            if (currSpeed < maxWalkBackwardsSpeed)
-            {
-                currSpeed = maxWalkBackwardsSpeed;
-            }
+            currSpeed = maxWalkBackwardsSpeed;
         }
     }
 

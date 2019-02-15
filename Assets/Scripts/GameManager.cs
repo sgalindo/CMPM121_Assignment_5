@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int requiredScore = 3;
     private bool doorOpened = false;
 
+    [SerializeField] private int playerHealth = 3;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,6 +41,12 @@ public class GameManager : MonoBehaviour
             door.OpenDoor();
             doorOpened = true;
         }
+
+        if (playerHealth == 0)
+        {
+            // INSERT GAME OVER
+            Debug.Log("GAME OVER");
+        }
     }
 
     public int GetScore()
@@ -50,5 +58,15 @@ public class GameManager : MonoBehaviour
     public void IncreaseScore(int num)
     {
         score += num;
+    }
+
+    public int GetHealth()
+    {
+        return playerHealth;
+    }
+
+    public void DecreaseHealth(int damage)
+    {
+        playerHealth -= damage;
     }
 }

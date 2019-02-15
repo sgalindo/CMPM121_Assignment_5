@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1214697564298626197}
   - component: {fileID: 9019263476778684736}
   - component: {fileID: 6799273932297175340}
+  - component: {fileID: 8619996373343633704}
   m_Layer: 0
   m_Name: Door
   m_TagString: Untagged
@@ -4864,3 +4865,15 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &8619996373343633704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6063293285299612792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05ac141965a48e447adc0784ce03e718, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -6,10 +6,12 @@ public class Collectible : MonoBehaviour
 {
     [HideInInspector] public bool paused = false;
     private ParticleSystem parts;
+    private GameManager gm;
     // Start is called before the first frame update
     void Start()
     {
         parts = GetComponent<ParticleSystem>();
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -34,5 +36,7 @@ public class Collectible : MonoBehaviour
         GetComponent<Renderer>().enabled = false;
         delay = parts.main.duration + parts.main.startLifetime.constant;
         Destroy(this.gameObject, delay);
+        gm.IncreaseScore(1);
+
     }
 }

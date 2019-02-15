@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    GameManager gm;
+
     private float currSpeed = 0.0f;
     public float maxRunSpeed = 7.0f;
     public float runAccel = 0.2f;
@@ -11,7 +13,6 @@ public class PlayerMovement : MonoBehaviour
     public float drag = 0.05f;
     public float turnSpeed = 300f;
     public float minMove = 0.1f;
-    public float jumpForce = 3.0f;
     private Rigidbody rb;
     private Animator animator;
     public float animationSpeed = 1.5f;
@@ -24,27 +25,32 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 turnInput;
     private float vertInput;
     private float horzInput;
-
-    private float jumpHeight;
+    
     private float curveHeight = 0.5f;
     private CapsuleCollider col;
     private float colliderHeight;
     private Vector3 colliderCenter;
-    public float jumpCooldown = 1.0f;
-    private float timestamp;
 
     [HideInInspector] public bool paused = false;
+
+    private float timestamp = 0f;
+    [SerializeField] private float slideCooldown = 2.0f;
+    private bool isSliding = false;
+
+    private AnimatorStateInfo animInfo;
+
+    private bool healthCooldown = false;
 
     // Start is called before the first frame update
     void Start()
     {
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
         animator.speed = animationSpeed;
         col = GetComponent<CapsuleCollider>();
         colliderHeight = col.height;
         colliderCenter = col.center;
-        timestamp = 0f;
         Cursor.lockState = CursorLockMode.Locked;
     }
 
@@ -58,24 +64,39 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("InputSpeed", vertInput);
         animator.SetFloat("Direction", horzInput);
         movementInput = transform.forward * vertInput;
-        turnInput = transform.up * horzInput * Time.deltaTime * turnSpeed;
+        turnInput = transform.up * horzInput * turnSpeed;
 
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    if (!animator.IsInTransition(0) && animator.GetCurrentAnimatorStateInfo(0).IsName("Movement") && (Time.time - timestamp) > jumpCooldown)
-        //    {
-        //        Jump();
-        //    }
-        //}
-        //
-        //if (animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-        //{
-        //    if (!animator.IsInTransition(0))
-        //    {
-        //        CheckJumpHeight();
-        //        animator.SetBool("IsJumping", false);
-        //    }
-        //}
+        animInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+        if (Input.GetKeyDown(KeyCode.Space) && animInfo.IsName("Movement") && Time.time > timestamp + slideCooldown && currSpeed == maxRunSpeed)
+        {
+            Slide();
+        }
+        isSliding = animInfo.IsName("Slide");
+    }
+
+    // On collision with enemy, attack enemy if sliding or take damage
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            if (isSliding)
+            {
+                collision.gameObject.GetComponent<Zombie>().DecreaseHealth(1);
+            }
+            else if (!healthCooldown)
+            {
+                gm.DecreaseHealth(1);
+                healthCooldown = true;
+                Invoke("ResetInvul", 2);
+            }
+        }
+    }
+
+    // Method to invoke after 3 seconds of invulnerability when hit
+    private void ResetInvul()
+    {
+        healthCooldown = false;
     }
 
     private void FixedUpdate()
@@ -83,7 +104,7 @@ public class PlayerMovement : MonoBehaviour
         if (!paused)
         {
             Move();
-            transform.Rotate(turnInput);
+            transform.Rotate(turnInput * Time.deltaTime);
             Animate();
         }
     }
@@ -114,11 +135,9 @@ public class PlayerMovement : MonoBehaviour
         transform.localPosition += (movementInput * Time.fixedDeltaTime * currSpeed);
     }
 
-    private void Jump()
+    private void Slide()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
-        isRunning = false;
-        animator.SetBool("IsJumping", true);
+        animator.SetTrigger("IsSliding");
         timestamp = Time.time;
     }
 
@@ -158,27 +177,6 @@ public class PlayerMovement : MonoBehaviour
         animator.SetBool("IsIdle", isIdle);
         animator.SetBool("IsRunning", isRunning);
         animator.SetBool("IsWalkingBackwards", isWalkingBackwards);
-    }
-
-    private void CheckJumpHeight()
-    {
-        jumpHeight = animator.GetFloat("JumpHeight");
-        RaycastHit hit = new RaycastHit();
-        Ray ray = new Ray(transform.position + Vector3.up, -Vector3.up);
-        if (Physics.Raycast(ray, out hit))
-        {
-            if (hit.distance > curveHeight)
-            {
-                col.height = colliderHeight - jumpHeight;
-                float colCenterY = colliderCenter.y + jumpHeight;
-                col.center = new Vector3(0, colCenterY, 0); 
-            }
-            else
-            {
-                col.height = colliderHeight;
-                col.center = colliderCenter;
-            }
-        }
     }
 }
 

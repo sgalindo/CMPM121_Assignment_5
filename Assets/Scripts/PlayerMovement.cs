@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* Salvador Galindo
+ * sagalind
+ * CMPM 121 - Assignment 5
+ * PlayerMovement.cs - Movement script for player (input and physics).
+ */
 public class PlayerMovement : MonoBehaviour
 {
     GameManager gm;
@@ -25,8 +30,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 turnInput;
     private float vertInput;
     private float horzInput;
-    
-    private float curveHeight = 0.5f;
+
     private CapsuleCollider col;
     private float colliderHeight;
     private Vector3 colliderCenter;
@@ -80,15 +84,17 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collision.gameObject.tag == "Enemy")
         {
+            bool isAttacking = collision.gameObject.GetComponent<Animator>().GetBool("IsAttacking");
             if (isSliding)
             {
                 collision.gameObject.GetComponent<Zombie>().DecreaseHealth(1);
             }
-            else if (!healthCooldown)
+            else if (!healthCooldown && isAttacking)
             {
                 gm.DecreaseHealth(1);
                 healthCooldown = true;
                 Invoke("ResetInvul", 2);
+                animator.SetTrigger("IsHurt");
             }
         }
     }

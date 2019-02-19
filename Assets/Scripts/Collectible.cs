@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* Salvador Galindo
+ * sagalind
+ * CMPM 121 - Assignment 5
+ * Collectible.cs - Script for individual collectibles (purple cubes).
+ */
 public class Collectible : MonoBehaviour
 {
     [HideInInspector] public bool paused = false;

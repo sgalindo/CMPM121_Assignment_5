@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/* Salvador Galindo
+ * sagalind
+ * CMPM 121 - Assignment 5
+ * CameraMovement.cs - Camera that follows/orbits the player.
+ */
 public class CameraMovement : MonoBehaviour
 {
     private Vector3 offset;
@@ -17,7 +22,7 @@ public class CameraMovement : MonoBehaviour
     void Start()
     {
         player = GameObject.Find("Player").transform;
-        offset = new Vector3(player.position.x, player.position.y + yOffset, player.position.z + zOffset);
+        offset = new Vector3(player.position.x, player.position.y + yOffset, player.position.z - zOffset);
     }
 
     // Update is called once per frame

@@ -17,4 +17,7 @@ Something Extra:
 
 Credits:
     UNITY-CHAN! - "Unity-Chan!" Model (Player model and animations)
+	    https://assetstore.unity.com/packages/3d/characters/unity-chan-model-18705
+
     SUPERCYAN   - Character Pack: Zombie Sample (Zombie model and animations)
+	    https://assetstore.unity.com/packages/3d/characters/humanoids/character-pack-zombie-sample-131604
